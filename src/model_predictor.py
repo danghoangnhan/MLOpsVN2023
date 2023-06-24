@@ -41,7 +41,6 @@ class ModelPredictor:
         self.category_index = RawDataProcessor.load_category_index(self.prob_config)
 
         # load model
-        print(self.config)
         model_uri = os.path.join(
             "models:/", self.config["model_name"], str(self.config["model_version"])
         )

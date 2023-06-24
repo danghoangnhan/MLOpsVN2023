@@ -17,7 +17,7 @@ from utils import AppConfig
 
 
 class ModelTrainer:
-    EXPERIMENT_NAME = "xgb-1"
+    EXPERIMENT_NAME = "xgb-2"
 
     @staticmethod
     def train_model(prob_config: ProblemConfig, model_params, add_captured_data=False):
@@ -66,6 +66,7 @@ class ModelTrainer:
             artifact_path=AppConfig.MLFLOW_MODEL_PREFIX,
             signature=signature,
         )
+        
         mlflow.end_run()
         logging.info("finish train_model")
 
@@ -81,6 +82,7 @@ if __name__ == "__main__":
 
     prob_config = get_prob_config(args.phase_id, args.prob_id)
     model_config = {"random_state": prob_config.random_state}
+    print(model_config)
     ModelTrainer.train_model(
         prob_config, model_config, add_captured_data=args.add_captured_data
     )

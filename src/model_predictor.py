@@ -30,7 +30,7 @@ class ModelPredictor:
         with open(config_file_path, "r") as f:
             self.config = yaml.safe_load(f)
         logging.info(f"model-config: {self.config}")
-
+        print(AppConfig.MLFLOW_TRACKING_URI)
         mlflow.set_tracking_uri(AppConfig.MLFLOW_TRACKING_URI)
 
         self.prob_config = create_prob_config(
@@ -41,9 +41,11 @@ class ModelPredictor:
         self.category_index = RawDataProcessor.load_category_index(self.prob_config)
 
         # load model
+        print(self.config)
         model_uri = os.path.join(
             "models:/", self.config["model_name"], str(self.config["model_version"])
         )
+        print(model_uri)
         self.model = mlflow.pyfunc.load_model(model_uri)
 
     def detect_drift(self, feature_df) -> int:
@@ -98,6 +100,12 @@ class PredictorApi:
             return {"message": "hello"}
 
         @self.app.post("/phase-1/prob-1/predict")
+        async def predict(data: Data, request: Request):
+            self._log_request(request)
+            response = self.predictor.predict(data)
+            self._log_response(response)
+            return response
+        @self.app.post("/phase-1/prob-2/predict")
         async def predict(data: Data, request: Request):
             self._log_request(request)
             response = self.predictor.predict(data)

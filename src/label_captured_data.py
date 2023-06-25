@@ -16,6 +16,8 @@ def label_captured_data(prob_config: ProblemConfig):
     captured_x = pd.DataFrame()
     for file_path in prob_config.captured_data_dir.glob("*.parquet"):
         captured_data = pd.read_parquet(file_path)
+        captured_data = captured_data.dropna()
+        captured_data = captured_data[train_x.columns]
         captured_x = pd.concat([captured_x, captured_data])
 
     logging.info(f"Loaded {len(captured_x)} captured samples, {len(train_x) + len(captured_x)} train + captured")
@@ -23,10 +25,12 @@ def label_captured_data(prob_config: ProblemConfig):
     # Align features between captured data and training data
     captured_x = captured_x[train_x.columns]
 
+    captured_x = pd.get_dummies(captured_x)
     logging.info("Preprocess the data to handle missing values")
     # Handle missing values in captured data
     imputer = SimpleImputer(strategy="mean")
     captured_x = pd.DataFrame(imputer.fit_transform(captured_x), columns=train_x.columns)
+    captured_x = pd.get_dummies(captured_x)
 
     logging.info("Initialize and fit the clustering model")
     n_cluster = int((len(train_x) + len(captured_x)) / 10) * len(np.unique(train_y))

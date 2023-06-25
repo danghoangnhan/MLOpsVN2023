@@ -14,6 +14,10 @@ mlflow_down:
 predictor_up:
 	bash deployment/deploy.sh run_predictor data/model_config/phase-1/prob-1/model-1.yaml 5040
 
+# predictor
+nginx_up:
+	docker-compose -f nginx/docker-compose.yml up -d
+
 predictor_down:
 	PORT=5040 docker-compose -f deployment/model_predictor/docker-compose.yml down
 
@@ -22,5 +26,5 @@ predictor_restart:
 	PORT=5040 docker-compose -f deployment/model_predictor/docker-compose.yml start
 
 predictor_curl:
-	curl -X POST http://localhost:5040/phase-1/prob-1/predict -H "Content-Type: application/json" -d @data/curl/phase-1/prob-1/payload-1.json
-	curl -X POST http://localhost:5040/phase-1/prob-1/predict -H "Content-Type: application/json" -d @data/curl/phase-1/prob-1/payload-2.json
+	curl -X POST http://140.136.149.212:5040/phase-1/prob-1/predict -H "Content-Type: application/json" -d @data/curl/phase-1/prob-1/payload-1.json
+	curl -X POST http://140.136.149.212:5040/phase-1/prob-2/predict -H "Content-Type: application/json" -d @data/curl/phase-1/prob-1/payload-2.json
